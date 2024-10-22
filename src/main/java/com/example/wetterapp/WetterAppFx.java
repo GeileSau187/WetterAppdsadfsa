@@ -22,7 +22,6 @@ import java.util.Locale;
 
 import org.json.*;
 
-// Raphi du geile Sau187
 public class WetterAppFx extends Application {
 
     // API Key und Ortsname für die Wetterdaten
@@ -179,7 +178,7 @@ public class WetterAppFx extends Application {
                 String wetterIconUrl = "https://openweathermap.org/img/wn/" + wetterIconId + "@2x.png";
 
                 // Wochentag speichern
-                String wochentag = getWochentag(tag.getString("dt_txt"));
+                String wochentag = tag.getString("dt_txt");
                 vorhersageDaten[i] = wochentag + "," + wetterIconUrl + "," + temperatur; // Temperatur und Icon URL
             }
 
@@ -196,10 +195,13 @@ public class WetterAppFx extends Application {
      */
     private String getWochentag(String datum) {
         try {
-            long timestamp = Long.parseLong(datum) * 1000; // UNIX-Timestamp
-            SimpleDateFormat sdf = new SimpleDateFormat("EEEE", Locale.GERMANY);
-            return sdf.format(new Date(timestamp));
+            // Datum im Format "YYYY-MM-DD HH:MM:SS"
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.GERMANY);
+            Date date = sdf.parse(datum);
+            SimpleDateFormat wochentagFormat = new SimpleDateFormat("EEEE", Locale.GERMANY);
+            return wochentagFormat.format(date);
         } catch (Exception e) {
+            e.printStackTrace();
             return "Unbekannt";
         }
     }
