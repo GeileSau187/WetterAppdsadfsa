@@ -22,6 +22,7 @@ import java.util.Locale;
 
 import org.json.*;
 
+// Raphi du geile Sau187!
 public class WetterAppFx extends Application {
 
     // API Key und Ortsname für die Wetterdaten
