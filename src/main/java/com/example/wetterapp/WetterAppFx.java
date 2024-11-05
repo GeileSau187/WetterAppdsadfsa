@@ -100,7 +100,10 @@ public class WetterAppFx extends Application {
             // UI-Updates müssen auf dem JavaFX-Anwendungsthread erfolgen
             Platform.runLater(() -> {
                 if (wetterDaten[0].startsWith("Fehler")) {
-                    showErrorWindow(); // Fehlerfenster anzeigen
+                    // Fehlernachricht in der UI anzeigen
+                    temperaturLabel.setText(wetterDaten[0]); // Temperaturlabel aktualisieren
+                    luftfeuchtigkeitLabel.setText(""); // Luftfeuchtigkeit zurücksetzen
+                    weatherIcon.setImage(null); // Wettericon zurücksetzen
                 } else {
                     // Wetterdaten in die UI-Elemente setzen
                     temperaturLabel.setText("Aktuelle Temperatur: " + wetterDaten[0] + "°C");
@@ -160,7 +163,7 @@ public class WetterAppFx extends Application {
             return new String[]{String.valueOf(temperatur), String.valueOf(luftfeuchtigkeit), wetterIconUrl};
         } catch (Exception e) {
             e.printStackTrace();
-            return new String[]{"Fehler beim Abrufen der Temperatur", "0", ""};
+            return new String[]{"Fehler beim Abrufen der Wetterdaten. Bitte überprüfen Sie den eingegebenen Ort.", "0", ""};
         }
     }
 
@@ -193,10 +196,9 @@ public class WetterAppFx extends Application {
                 double temperatur = tag.getJSONObject("main").getDouble("temp");
                 String wetterIconId = tag.getJSONArray("weather").getJSONObject(0).getString("icon");
                 String wetterIconUrl = "https://openweathermap.org/img/wn/" + wetterIconId + "@2x.png";
-                String wochentag = tag.getString("dt_txt");
+                String wochentag = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(tag.getLong("dt") * 1000));
 
-                // Vorhersagedaten speichern
-                vorhersageDaten[i] = wochentag + "," + wetterIconUrl + "," + temperatur;
+                vorhersageDaten[i] = wochentag + "," + wetterIconUrl + "," + temperatur; // Speichern der Vorhersagedaten
             }
             return vorhersageDaten;
         } catch (Exception e) {
@@ -205,23 +207,23 @@ public class WetterAppFx extends Application {
         }
     }
 
-    // Methode zur Ermittlung des Wochentags anhand eines Datums
+    // Methode zur Bestimmung des Wochentags anhand eines Datums
     private String getWochentag(String datum) {
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             Date date = sdf.parse(datum); // Datum parsen
             SimpleDateFormat wochentagSdf = new SimpleDateFormat("EEEE", Locale.getDefault()); // Wochentag-Format
             return wochentagSdf.format(date); // Wochentag zurückgeben
         } catch (Exception e) {
             e.printStackTrace();
-            return "Unbekannt";
+            return "Unbekannt"; // Rückgabewert bei Fehler
         }
     }
 
     // Methode zum Anzeigen eines Fehlerfensters bei Problemen
-    private void showErrorWindow() {
+    private void showErrorWindow(String message) {
         // Implementierung des Fehlerfensters kann hier erfolgen
-        System.out.println("Ein Fehler ist aufgetreten!"); // Platzhalter für Fehlerbehandlung
+        System.out.println(message); // Platzhalter für Fehlerbehandlung
     }
 
     // Hilfsmethode zur Erstellung von Labels mit spezifischer Schriftgröße
